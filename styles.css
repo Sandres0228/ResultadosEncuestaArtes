@@ -146,30 +146,30 @@ section.active {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* ========== OPCIONES ========== */
+/* ========== OPCIONES (TARJETAS PRINCIPALES) ========== */
 .opciones {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
     margin-bottom: 24px;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 768px) {
     .opciones {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
     }
 }
 
 .opcion {
     background: var(--bg-container);
-    padding: 30px 24px;
+    padding: 40px 24px;
     border-radius: var(--radius);
     cursor: pointer;
     text-align: center;
     box-shadow: 0 4px 20px var(--shadow-color);
     border: 2px solid var(--border-color);
     transition: var(--transition);
-    min-height: 140px;
+    min-height: 180px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -178,27 +178,66 @@ section.active {
 }
 
 .opcion:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px var(--shadow-hover);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px var(--shadow-hover);
     border-color: var(--primary-color);
+    background: var(--bg-hover);
+}
+
+.opcion:active {
+    transform: translateY(-2px);
 }
 
 .opcion .icono {
-    font-size: 3rem;
-    margin-bottom: 12px;
+    font-size: 3.5rem;
+    margin-bottom: 16px;
+    display: block;
 }
 
 .opcion h2 {
     color: var(--text-primary);
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     margin-bottom: 8px;
     font-weight: 600;
 }
 
 .opcion p {
     color: var(--text-secondary);
-    font-size: 0.9rem;
-    max-width: 300px;
+    font-size: 0.95rem;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+/* ========== FORMULARIO ACCESS ========== */
+.formulario-access {
+    margin: 24px 0;
+    text-align: center;
+}
+
+.btn-formulario {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.35);
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-formulario:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(76, 175, 80, 0.45);
+}
+
+.btn-formulario:active {
+    transform: translateY(-1px);
 }
 
 /* ========== ESTADÍSTICAS ========== */
@@ -385,7 +424,7 @@ section.active {
 
 .filtro-btn:hover {
     background: var(--bg-hover);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
 .filtro-btn.active {
@@ -422,7 +461,7 @@ section.active {
 
 .item:hover {
     box-shadow: 0 8px 30px var(--shadow-hover);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
 }
 
 .item.gris {
@@ -795,11 +834,14 @@ footer {
         font-size: 1.5rem;
     }
     .opcion {
-        padding: 20px 16px;
-        min-height: 100px;
+        padding: 24px 16px;
+        min-height: 140px;
     }
     .opcion .icono {
-        font-size: 2rem;
+        font-size: 2.5rem;
+    }
+    .opcion h2 {
+        font-size: 1.1rem;
     }
 }
 
@@ -822,5 +864,15 @@ footer {
     }
     .btn-modo span:not(.icono) {
         display: none;
+    }
+    .opcion {
+        padding: 20px 12px;
+        min-height: 100px;
+    }
+    .opcion .icono {
+        font-size: 2rem;
+    }
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
     }
 }
