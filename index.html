@@ -3,739 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Encuesta académica – Artes UNAL</title>
+<title>Resultados Encuesta – Artes UNAL</title>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
-<style>
-/* ===== RESET Y VARIABLES ===== */
-:root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --accent-color: #e74c3c;
-    --light-color: #f8f9fa;
-    --dark-color: #343a40;
-    --border-color: #dee2e6;
-    --border-radius: 8px;
-    --shadow: 0 2px 4px rgba(0,0,0,0.08);
-    --shadow-hover: 0 4px 8px rgba(0,0,0,0.12);
-    --transition: all 0.2s ease;
-}
+<!-- ===== CONEXIÓN AL CSS EXTERNO ===== -->
+<link rel="stylesheet" href="styles.css">
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    background-color: #f5f7fa;
-    -webkit-font-smoothing: antialiased;
-}
-
-/* ===== CONTENEDOR PRINCIPAL ===== */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 16px;
-}
-
-/* ===== HEADER ===== */
-header {
-    background: white;
-    padding: 24px 16px;
-    margin-bottom: 24px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    text-align: center;
-}
-
-header h1 {
-    color: var(--primary-color);
-    font-size: 1.75rem;
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-
-header p {
-    color: #666;
-    font-size: 1rem;
-}
-
-/* ===== SECCIONES ===== */
-section {
-    display: none;
-}
-
-section.active {
-    display: block;
-}
-
-/* ===== TARJETAS PRINCIPALES ===== */
-.opciones {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-@media (min-width: 768px) {
-    .opciones {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-.opcion {
-    background: white;
-    padding: 24px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    text-align: center;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
-    transition: var(--transition);
-    min-height: 140px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    user-select: none;
-}
-
-.opcion:hover {
-    box-shadow: var(--shadow-hover);
-    border-color: var(--secondary-color);
-    transform: translateY(-2px);
-}
-
-.opcion:active {
-    transform: translateY(-1px);
-}
-
-.opcion .icono {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
-    display: block;
-}
-
-.opcion h2 {
-    color: var(--primary-color);
-    font-size: 1.25rem;
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-
-.opcion p {
-    color: #666;
-    font-size: 0.9rem;
-    max-width: 300px;
-}
-
-/* ===== CONTROLES ===== */
-.control {
-    background: white;
-    padding: 16px;
-    border-radius: var(--border-radius);
-    margin-bottom: 20px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
-}
-
-.control-header {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-@media (min-width: 768px) {
-    .control-header {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
-}
-
-.btn-volver {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-weight: 500;
-    font-size: 0.95rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: var(--transition);
-    width: fit-content;
-    user-select: none;
-}
-
-.btn-volver:hover {
-    background: #1a252f;
-    transform: translateX(-2px);
-}
-
-.btn-volver:active {
-    transform: translateX(-1px);
-}
-
-.buscador {
-    flex: 1;
-    max-width: 100%;
-}
-
-@media (min-width: 768px) {
-    .buscador {
-        max-width: 400px;
-    }
-}
-
-.buscador input {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    font-size: 0.95rem;
-    transition: var(--transition);
-}
-
-.buscador input:focus {
-    outline: none;
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-}
-
-.filtros {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-}
-
-.filtro-btn {
-    background: #f8f9fa;
-    border: 1px solid var(--border-color);
-    padding: 8px 16px;
-    border-radius: var(--border-radius);
-    font-size: 0.85rem;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: var(--transition);
-    user-select: none;
-}
-
-.filtro-btn:hover {
-    background: #e9ecef;
-    transform: translateY(-1px);
-}
-
-.filtro-btn:active {
-    transform: translateY(0);
-}
-
-.filtro-btn.active {
-    background: var(--secondary-color);
-    color: white;
-    border-color: var(--secondary-color);
-}
-
-/* ===== LISTA DE ITEMS ===== */
-.lista {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-}
-
-@media (min-width: 640px) {
-    .lista {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    }
-}
-
-.item {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
-    overflow: hidden;
-    transition: var(--transition);
-    min-height: 120px;
-    display: flex;
-    flex-direction: column;
-    user-select: none;
-}
-
-.item:hover {
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-2px);
-}
-
-.item:active {
-    transform: translateY(-1px);
-}
-
-.item.gris {
-    background: #f8f9fa;
-    border: 1px dashed #adb5bd;
-}
-
-.item.gris:hover {
-    transform: none;
-    box-shadow: var(--shadow);
-}
-
-.item-header {
-    padding: 16px;
-    border-bottom: 1px solid var(--border-color);
-    flex: 1;
-}
-
-.item strong {
-    color: var(--primary-color);
-    font-size: 1rem;
-    font-weight: 600;
-    display: block;
-    margin-bottom: 8px;
-    line-height: 1.4;
-}
-
-.estado {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    margin-top: 8px;
-}
-
-.item:not(.gris) .estado {
-    background: #d4edda;
-    color: #155724;
-}
-
-.item.gris .estado {
-    background: #e2e3e5;
-    color: #383d41;
-}
-
-.item-footer {
-    padding: 12px 16px;
-    background: #f8f9fa;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.rating-mini {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.9rem;
-}
-
-.estrellas-mini {
-    color: #f5b301;
-    font-size: 0.9rem;
-}
-
-.opinion-count {
-    color: #666;
-    font-size: 0.8rem;
-}
-
-.btn-opinar {
-    background: var(--accent-color);
-    color: white;
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: var(--border-radius);
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: var(--transition);
-    display: inline-block;
-    user-select: none;
-}
-
-.btn-opinar:hover {
-    background: #c0392b;
-    transform: translateY(-1px);
-}
-
-.btn-opinar:active {
-    transform: translateY(0);
-}
-
-/* ===== PERFIL ===== */
-.perfil {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
-    overflow: hidden;
-}
-
-.perfil-header {
-    padding: 24px;
-    border-bottom: 1px solid var(--border-color);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.perfil-header h2 {
-    font-size: 1.5rem;
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-
-.perfil-subtitle {
-    font-size: 0.95rem;
-    opacity: 0.9;
-}
-
-/* ===== CALIFICACIÓN ===== */
-.calificacion {
-    padding: 20px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.rating-container {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.promedio-numero {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
-}
-
-.estrellas-promedio {
-    font-size: 1.5rem;
-    letter-spacing: 2px;
-    margin-bottom: 4px;
-}
-
-.estrellas-promedio .estrella-llena {
-    color: #f5b301;
-}
-
-.estrellas-promedio .estrella-vacia {
-    color: #ddd;
-}
-
-.rating-info {
-    flex: 1;
-}
-
-.total-opiniones {
-    color: #666;
-    font-size: 0.9rem;
-    margin-top: 4px;
-}
-
-/* ===== INFORMACIÓN EXTENDIDA (MATERIAS) ===== */
-.info-materia {
-    padding: 20px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.info-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-}
-
-@media (min-width: 640px) {
-    .info-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-}
-
-.info-item {
-    padding: 12px;
-    background: #f8f9fa;
-    border-radius: var(--border-radius);
-    border-left: 3px solid var(--secondary-color);
-}
-
-.info-item h4 {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.info-item p {
-    font-size: 1rem;
-    color: var(--primary-color);
-    font-weight: 500;
-}
-
-/* Indicadores visuales */
-.indicator {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 15px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    margin: 2px;
-}
-
-.indicator.alta { background: #f8d7da; color: #721c24; }
-.indicator.media { background: #fff3cd; color: #856404; }
-.indicator.baja { background: #d4edda; color: #155724; }
-
-.indicator.alto { background: #f8d7da; color: #721c24; }
-.indicator.medio { background: #fff3cd; color: #856404; }
-.indicator.bajo { background: #d4edda; color: #155724; }
-.indicator.muy-alto { background: #dc3545; color: white; }
-.indicator.casi-ninguno { background: #28a745; color: white; }
-
-/* ===== MATERIAS ASOCIADAS (DOCENTES) ===== */
-.materias-asociadas {
-    padding: 20px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.materias-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-}
-
-.materia-tag {
-    background: #e7f3ff;
-    color: var(--secondary-color);
-    padding: 6px 12px;
-    border-radius: 15px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: var(--transition);
-}
-
-.materia-tag:hover {
-    background: #d0e7ff;
-    transform: translateY(-1px);
-}
-
-/* ===== COMENTARIOS ===== */
-.comentarios-section {
-    padding: 20px;
-}
-
-.comentarios-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.comentarios-header h3 {
-    font-size: 1.1rem;
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-.btn-toggle-comentarios {
-    background: var(--secondary-color);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: var(--transition);
-    user-select: none;
-}
-
-.btn-toggle-comentarios:hover {
-    background: #2980b9;
-    transform: translateY(-1px);
-}
-
-.btn-toggle-comentarios:active {
-    transform: translateY(0);
-}
-
-.comentarios-container {
-    display: none;
-}
-
-.comentarios-container.visible {
-    display: block;
-    animation: fadeIn 0.3s ease;
-}
-
-.comentario {
-    background: #f8f9fa;
-    padding: 16px;
-    border-radius: var(--border-radius);
-    margin-bottom: 12px;
-    border-left: 3px solid var(--secondary-color);
-    transition: var(--transition);
-}
-
-.comentario:hover {
-    background: #eef5ff;
-}
-
-.comentario-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.comentario-origen {
-    background: #6c757d;
-    color: white;
-    padding: 4px 10px;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.comentario-fecha {
-    font-size: 0.8rem;
-    color: #666;
-}
-
-.comentario-texto {
-    font-size: 0.95rem;
-    line-height: 1.5;
-    color: #333;
-}
-
-/* ===== SIN DATOS ===== */
-.sin-datos {
-    text-align: center;
-    padding: 40px 20px;
-    color: #666;
-}
-
-.sin-datos .icono {
-    font-size: 3rem;
-    margin-bottom: 16px;
-    opacity: 0.3;
-}
-
-.sin-datos h3 {
-    font-size: 1.2rem;
-    margin-bottom: 8px;
-    color: #495057;
-}
-
-.sin-datos p {
-    max-width: 400px;
-    margin: 0 auto;
-    font-size: 0.95rem;
-}
-
-/* ===== LOADING ===== */
-.loading {
-    text-align: center;
-    padding: 40px;
-    color: #666;
-}
-
-.loading-spinner {
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid var(--secondary-color);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 16px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* ===== ESTADÍSTICAS ===== */
-.estadisticas {
-    background: white;
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    margin-bottom: 24px;
-    border: 1px solid var(--border-color);
-}
-
-.estadisticas h3 {
-    font-size: 1.1rem;
-    color: var(--primary-color);
-    margin-bottom: 16px;
-    font-weight: 600;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 16px;
-}
-
-.stat-item {
-    text-align: center;
-    padding: 16px;
-    background: #f8f9fa;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--border-color);
-    transition: var(--transition);
-}
-
-.stat-item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
-}
-
-.stat-value {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-bottom: 4px;
-}
-
-.stat-label {
-    font-size: 0.85rem;
-    color: #666;
-}
-
-/* ===== FOOTER ===== */
-footer {
-    text-align: center;
-    padding: 20px;
-    color: #666;
-    font-size: 0.85rem;
-    margin-top: 40px;
-    border-top: 1px solid var(--border-color);
-}
-</style>
 </head>
-
 <body>
 
 <div class="container">
     <header>
-        <h1>🎨 Encuesta académica – Artes UNAL</h1>
-        <p>Resultados sobre asignaturas y docentes</p>
+        <h1>🎨 Resultados Encuesta Académica – Artes UNAL</h1>
+        <p>Opiniones sobre asignaturas y docentes</p>
+        <button id="btnModo" class="btn-modo" onclick="toggleModo()" style="position: static; margin-top: 12px; display: inline-flex;">
+            <span class="icono">🌙</span>
+            <span>Modo oscuro</span>
+        </button>
     </header>
 
     <main>
@@ -753,32 +38,31 @@ footer {
                     <p>Evaluaciones y materias asociadas a cada profesor</p>
                 </div>
             </div>
+            
             <div class="formulario-access" style="margin: 20px 0; text-align: center;">
-    <a href="https://sandres0228.github.io/Opinionmaterias-Artesunalmed/" 
-       target="_blank" 
-       class="btn-formulario"
-       style="display: inline-flex;
-              align-items: center;
-              gap: 10px;
-              padding: 14px 24px;
-              background: linear-gradient(135deg, #4CAF50, #45a049);
-              color: white;
-              text-decoration: none;
-              border-radius: 8px;
-              font-weight: 600;
-              font-size: 1.1rem;
-              box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
-              transition: all 0.3s ease;
-              border: none;
-              cursor: pointer;">
-        <i class="fas fa-edit" style="font-size: 1.2rem;"></i>
-        📝 Llenar formulario de opinion de asignaturas
-    </a>
-    
-    <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">
-        ¡Tu opinión ayuda a otros estudiantes a elegir mejor!
-    </p>
-</div>
+                <a href="https://sandres0228.github.io/Opinionmaterias-Artesunalmed/" 
+                   target="_blank" 
+                   class="btn-formulario"
+                   style="display: inline-flex;
+                          align-items: center;
+                          gap: 10px;
+                          padding: 14px 24px;
+                          background: linear-gradient(135deg, #4CAF50, #45a049);
+                          color: white;
+                          text-decoration: none;
+                          border-radius: 8px;
+                          font-weight: 600;
+                          font-size: 1.1rem;
+                          box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+                          transition: all 0.3s ease;
+                          border: none;
+                          cursor: pointer;">
+                    📝 Llenar formulario de opinión de asignaturas
+                </a>
+                <p style="margin-top: 10px; color: var(--text-secondary); font-size: 0.9rem;">
+                    ¡Tu opinión ayuda a otros estudiantes a elegir mejor!
+                </p>
+            </div>
             
             <div class="estadisticas" id="estadisticas">
                 <h3>📊 Estadísticas generales</h3>
@@ -868,7 +152,6 @@ const ASIGNATURAS_BASE = [
     "Seminario I (3009854)",
     "Seminario II (3006700)",
     "Seminario III (3006701)"
-    // Talleres eliminados intencionalmente
 ];
 
 // Lista de docentes
@@ -958,22 +241,19 @@ function esTaller(asignatura) {
     return TALLERES_REGEX.test(asignatura);
 }
 
-// ================= ALGORITMO PARA CALCULAR MODA (VALOR MÁS FRECUENTE) =================
+// ================= ALGORITMO PARA CALCULAR MODA =================
 function calcularModa(valores) {
     if (!valores || valores.length === 0) return "No especificado";
     
-    // Filtrar valores vacíos
     const valoresFiltrados = valores.filter(v => v && v.trim() && v !== "No especificado");
     if (valoresFiltrados.length === 0) return "No especificado";
     
-    // Contar frecuencia de cada valor
     const frecuencia = {};
     valoresFiltrados.forEach(valor => {
         const val = valor.trim();
         frecuencia[val] = (frecuencia[val] || 0) + 1;
     });
     
-    // Encontrar el valor con mayor frecuencia
     let moda = "";
     let maxFrecuencia = 0;
     
@@ -982,7 +262,6 @@ function calcularModa(valores) {
             maxFrecuencia = count;
             moda = valor;
         } else if (count === maxFrecuencia) {
-            // En caso de empate, seleccionar según criterios específicos
             moda = resolverEmpate(moda, valor);
         }
     });
@@ -991,47 +270,16 @@ function calcularModa(valores) {
 }
 
 function resolverEmpate(valor1, valor2) {
-    // Orden de preferencia para Carga Académica
     const ordenCarga = { "Baja": 1, "Media": 2, "Alta": 3 };
+    const ordenGasto = { "Casi ninguno": 1, "Bajo": 2, "Medio": 3, "Alto": 4, "Muy alto": 5 };
     
-    // Orden de preferencia para Gasto Económico (de menor a mayor)
-    const ordenGasto = { 
-        "Casi ninguno": 1, 
-        "Bajo": 2, 
-        "Medio": 3, 
-        "Alto": 4, 
-        "Muy alto": 5 
-    };
-    
-    // Verificar si son valores de carga académica
     if (valor1 in ordenCarga && valor2 in ordenCarga) {
         return ordenCarga[valor1] > ordenCarga[valor2] ? valor1 : valor2;
     }
-    
-    // Verificar si son valores de gasto económico
     if (valor1 in ordenGasto && valor2 in ordenGasto) {
-        // Para gasto, preferir el valor más conservador (menor)
         return ordenGasto[valor1] < ordenGasto[valor2] ? valor1 : valor2;
     }
-    
-    // Si no son comparables, mantener el primero
     return valor1;
-}
-
-// ================= CÁLCULO DE RANKING INTELIGENTE =================
-function calcularRanking(promedio, numOpiniones) {
-    // Fórmula que balancea promedio y cantidad de opiniones
-    // Penaliza items con pocas opiniones
-    const minOpiniones = 3;
-    
-    if (numOpiniones < minOpiniones) {
-        // Penalización fuerte para pocas opiniones
-        return promedio * (numOpiniones / minOpiniones);
-    }
-    
-    // Bonificación para muchas opiniones (hasta 2x)
-    const pesoOpiniones = Math.min(numOpiniones / minOpiniones, 2);
-    return promedio * pesoOpiniones;
 }
 
 // ================= CARGA Y PROCESAMIENTO DE DATOS =================
@@ -1049,24 +297,6 @@ function cargarDatos() {
                 return limpia;
             });
             
-            // 🔍 DEBUGGING: Mostrar nombres de columnas para verificar
-            if (datos.length > 0) {
-                console.log("📊 Nombres de columnas en CSV:", Object.keys(datos[0] || {}));
-                console.log("📄 Primer registro completo:", datos[0]);
-                
-                // Buscar columnas relacionadas con carga y gasto
-                const primerRegistro = datos[0];
-                console.log("🔍 Buscando columnas relacionadas:");
-                Object.keys(primerRegistro).forEach(key => {
-                    if (key.toLowerCase().includes('carga') || 
-                        key.toLowerCase().includes('gasto') ||
-                        key.toLowerCase().includes('econ') ||
-                        key.toLowerCase().includes('acad')) {
-                        console.log(`✅ Encontrada columna: "${key}" = "${primerRegistro[key]}"`);
-                    }
-                });
-            }
-            
             console.log(`✅ Datos cargados: ${datos.length} registros`);
             calcularEstadisticas();
             actualizarEstadisticasUI();
@@ -1079,15 +309,10 @@ function cargarDatos() {
 }
 
 function calcularEstadisticas() {
-    // Calificaciones de asignaturas (excluyendo talleres)
     const califAsignaturas = [];
     const asignaturasVistas = new Set();
-    
-    // Calificaciones de docentes
     const califDocentes = [];
     const docentesVistos = new Set();
-    
-    // Conteo de opiniones
     let totalOpinionesAsignaturas = 0;
     let totalOpinionesDocentes = 0;
     
@@ -1095,7 +320,6 @@ function calcularEstadisticas() {
         const asignatura = fila.Asignatura;
         const docente = fila.Docente;
         
-        // Calificación de asignatura (si no es taller)
         if (asignatura && !esTaller(asignatura)) {
             const calif = parseFloat(fila["Valoración materia"]);
             if (!isNaN(calif) && calif > 0) {
@@ -1105,7 +329,6 @@ function calcularEstadisticas() {
             }
         }
         
-        // Calificación de docente
         if (docente) {
             const calif = parseFloat(fila["Valoración Docente"]);
             if (!isNaN(calif) && calif > 0) {
@@ -1122,9 +345,7 @@ function calcularEstadisticas() {
         totalAsignaturasConOpiniones: asignaturasVistas.size,
         totalDocentesConOpiniones: docentesVistos.size,
         totalOpinionesAsignaturas: totalOpinionesAsignaturas,
-        totalOpinionesDocentes: totalOpinionesDocentes,
-        asignaturasAnalizadas: Array.from(asignaturasVistas),
-        docentesAnalizados: Array.from(docentesVistos)
+        totalOpinionesDocentes: totalOpinionesDocentes
     };
 }
 
@@ -1162,7 +383,7 @@ function mostrarSeccion(id) {
 
 function verAsignaturas() {
     vista = "asignatura";
-    filtroActual = "todos"; // Por defecto mostrar todas en orden alfabético
+    filtroActual = "todos";
     mostrarSeccion('listado');
     actualizarFiltros();
     cargarListaAsignaturas();
@@ -1170,7 +391,7 @@ function verAsignaturas() {
 
 function verDocentes() {
     vista = "docente";
-    filtroActual = "todos"; // Por defecto mostrar todos en orden alfabético
+    filtroActual = "todos";
     mostrarSeccion('listado');
     actualizarFiltros();
     cargarListaDocentes();
@@ -1203,7 +424,6 @@ function actualizarFiltros() {
             <button class="filtro-btn ${filtroActual === 'tecnicas' ? 'active' : ''}" onclick="cambiarFiltro('tecnicas')">
                 🔧 Técnicas
             </button>
-            <!-- NUEVOS FILTROS PARA CARGA Y GASTO -->
             <button class="filtro-btn ${filtroActual === 'carga-baja' ? 'active' : ''}" onclick="cambiarFiltro('carga-baja')">
                 ⚖️ Carga Baja
             </button>
@@ -1231,7 +451,6 @@ function actualizarFiltros() {
 function cambiarFiltro(tipo) {
     filtroActual = tipo;
     actualizarFiltros();
-    
     if (vista === "asignatura") {
         cargarListaAsignaturas();
     } else {
@@ -1241,7 +460,6 @@ function cambiarFiltro(tipo) {
 
 // ================= CARGA DE LISTAS =================
 function cargarListaAsignaturas() {
-    // Obtener todas las asignaturas con sus datos procesados
     const asignaturasConDatos = [];
     
     ASIGNATURAS_BASE.forEach(asignaturaNombre => {
@@ -1249,30 +467,26 @@ function cargarListaAsignaturas() {
             fila.Asignatura && normalizar(fila.Asignatura) === normalizar(asignaturaNombre)
         );
         
-        // Calificaciones de la materia
         const calificaciones = registros
             .map(fila => parseFloat(fila["Valoración materia"]))
             .filter(calif => !isNaN(calif) && calif > 0);
         
-        // Recopilar TODOS los valores para cada campo - CORREGIDO CON NOMBRES CORRECTOS
         const todosEnfoques = registros
             .map(fila => fila.Enfoque)
             .filter(enfoque => enfoque && enfoque.trim());
         
-        // ✅ CORRECCIÓN CRÍTICA AQUÍ: Nombres CORRECTOS de columnas
         const todasCargas = registros
-            .map(fila => fila["Carga Académica"])  // ← NOMBRE CORRECTO
+            .map(fila => fila["Carga Académica"])
             .filter(carga => carga && carga.trim());
         
         const todosGastos = registros
-            .map(fila => fila["Gasto Económico"])  // ← NOMBRE CORRECTO
+            .map(fila => fila["Gasto Económico"])
             .filter(gasto => gasto && gasto.trim());
         
         const todosTiposEvaluacion = registros
             .map(fila => fila.Calificación)
             .filter(tipo => tipo && tipo.trim());
         
-        // Calcular la moda (valor más frecuente) para cada campo
         const infoExtendida = {
             enfoque: calcularModa(todosEnfoques),
             carga: calcularModa(todasCargas),
@@ -1294,46 +508,36 @@ function cargarListaAsignaturas() {
         });
     });
     
-    // Aplicar filtros y ordenamiento
     let asignaturasFiltradas = [...asignaturasConDatos];
     
     switch (filtroActual) {
         case 'mejores':
-            // Filtro inteligente: mínimo 3 opiniones y ranking alto
             asignaturasFiltradas = asignaturasConDatos
                 .filter(a => a.numOpiniones >= 3 && a.promedio >= 3.5)
                 .sort((a, b) => b.ranking - a.ranking);
             break;
-            
         case 'teoricas':
             asignaturasFiltradas = asignaturasConDatos
                 .filter(a => a.infoExtendida.enfoque.toLowerCase().includes('teórica'))
                 .sort((a, b) => a.nombre.localeCompare(b.nombre));
             break;
-            
         case 'tecnicas':
             asignaturasFiltradas = asignaturasConDatos
                 .filter(a => a.infoExtendida.enfoque.toLowerCase().includes('técnica'))
                 .sort((a, b) => a.nombre.localeCompare(b.nombre));
             break;
-            
         case 'carga-baja':
-            // NUEVO FILTRO: Materias con carga académica baja
             asignaturasFiltradas = asignaturasConDatos
                 .filter(a => a.infoExtendida.carga === "Baja")
                 .sort((a, b) => a.nombre.localeCompare(b.nombre));
             break;
-            
         case 'gasto-bajo':
-            // NUEVO FILTRO: Materias con gasto económico bajo
             asignaturasFiltradas = asignaturasConDatos
                 .filter(a => a.infoExtendida.gasto === "Bajo" || a.infoExtendida.gasto === "Casi ninguno")
                 .sort((a, b) => a.nombre.localeCompare(b.nombre));
             break;
-            
         case 'todos':
         default:
-            // Orden alfabético por defecto
             asignaturasFiltradas.sort((a, b) => a.nombre.localeCompare(b.nombre));
             break;
     }
@@ -1349,18 +553,15 @@ function cargarListaDocentes() {
             fila.Docente && normalizar(fila.Docente) === normalizar(docenteNombre)
         );
         
-        // Calificaciones del docente (incluyendo talleres)
         const calificaciones = registros
             .map(fila => parseFloat(fila["Valoración Docente"]))
             .filter(calif => !isNaN(calif) && calif > 0);
         
-        // Materias asociadas (excluyendo talleres y duplicados)
         const materiasAsociadas = [...new Set(registros
             .map(fila => fila.Asignatura)
             .filter(asignatura => asignatura && !esTaller(asignatura))
         )];
         
-        // Comentarios del docente
         const comentarios = registros
             .filter(fila => fila["Opinión Docente"] && fila["Opinión Docente"].trim())
             .map(fila => ({
@@ -1384,26 +585,21 @@ function cargarListaDocentes() {
         });
     });
     
-    // Aplicar filtros y ordenamiento
     let docentesFiltrados = [...docentesConDatos];
     
     switch (filtroActual) {
         case 'mejores':
-            // Filtro inteligente para docentes
             docentesFiltrados = docentesConDatos
                 .filter(d => d.numOpiniones >= 2 && d.promedio >= 3.5)
                 .sort((a, b) => b.ranking - a.ranking);
             break;
-            
         case 'conOpiniones':
             docentesFiltrados = docentesConDatos
                 .filter(d => d.tieneOpiniones)
                 .sort((a, b) => a.nombre.localeCompare(b.nombre));
             break;
-            
         case 'todos':
         default:
-            // Orden alfabético por defecto
             docentesFiltrados.sort((a, b) => a.nombre.localeCompare(b.nombre));
             break;
     }
@@ -1433,20 +629,19 @@ function mostrarListaAsignaturas(asignaturas) {
         const claseItem = `item${tieneOpiniones ? '' : ' gris'}`;
         const tieneInteraccion = tieneOpiniones ? 'cursor: pointer;' : '';
         
-        // Función para determinar la clase CSS según carga/gasto
         const getBadgeClass = (valor) => {
             if (!valor || valor === "No especificado") return "";
-            
-            if (["Baja", "Media", "Alta"].includes(valor)) {
-                return `badge-carga-${valor.toLowerCase()}`;
-            }
-            
-            if (["Casi ninguno", "Bajo", "Medio", "Alto", "Muy alto"].includes(valor)) {
-                const nombreClase = valor.toLowerCase().replace(" ", "-").replace("casi-ninguno", "gasto-ninguno");
-                return `badge-gasto-${nombreClase}`;
-            }
-            
-            return "";
+            const clases = {
+                "Baja": "indicator-baja",
+                "Media": "indicator-media",
+                "Alta": "indicator-alta",
+                "Casi ninguno": "indicator-gasto-ninguno",
+                "Bajo": "indicator-bajo",
+                "Medio": "indicator-medio",
+                "Alto": "indicator-alto",
+                "Muy alto": "indicator-muy-alto"
+            };
+            return clases[valor] || "";
         };
         
         html += `
@@ -1455,15 +650,14 @@ function mostrarListaAsignaturas(asignaturas) {
                     <strong>${escapeHTML(asignatura.nombre)}</strong>
                     
                     ${asignatura.infoExtendida.enfoque !== "No especificado" ? `
-                        <div style="margin-top: 8px; font-size: 0.85rem; color: #666;">
+                        <div style="margin-top: 8px; font-size: 0.85rem; color: var(--text-secondary);">
                             📝 ${escapeHTML(asignatura.infoExtendida.enfoque)}
                         </div>
                     ` : ''}
                     
-                    <!-- NUEVO: Mostrar carga y gasto con badges -->
                     ${asignatura.infoExtendida.carga !== "No especificado" ? `
                         <div style="margin-top: 4px; font-size: 0.8rem;">
-                            <span class="${getBadgeClass(asignatura.infoExtendida.carga)}" style="padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">
+                            <span class="${getBadgeClass(asignatura.infoExtendida.carga)}" style="padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
                                 ⚖️ ${escapeHTML(asignatura.infoExtendida.carga)}
                             </span>
                         </div>
@@ -1471,7 +665,7 @@ function mostrarListaAsignaturas(asignaturas) {
                     
                     ${asignatura.infoExtendida.gasto !== "No especificado" ? `
                         <div style="margin-top: 4px; font-size: 0.8rem;">
-                            <span class="${getBadgeClass(asignatura.infoExtendida.gasto)}" style="padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">
+                            <span class="${getBadgeClass(asignatura.infoExtendida.gasto)}" style="padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500;">
                                 💰 ${escapeHTML(asignatura.infoExtendida.gasto)}
                             </span>
                         </div>
@@ -1490,7 +684,7 @@ function mostrarListaAsignaturas(asignaturas) {
                         </div>
                     ` : `
                         <div class="rating-mini">
-                            <span style="color: #999; font-size: 0.85rem;">Sin calificaciones</span>
+                            <span style="color: var(--text-muted); font-size: 0.85rem;">Sin calificaciones</span>
                         </div>
                     `}
                     
@@ -1535,7 +729,7 @@ function mostrarListaDocentes(docentes) {
                     <strong>${escapeHTML(docente.nombre)}</strong>
                     
                     ${docente.materiasAsociadas.length > 0 ? `
-                        <div style="margin-top: 8px; font-size: 0.85rem; color: #666;">
+                        <div style="margin-top: 8px; font-size: 0.85rem; color: var(--text-secondary);">
                             📚 ${docente.materiasAsociadas.length} ${docente.materiasAsociadas.length === 1 ? 'materia' : 'materias'} asociadas
                         </div>
                     ` : ''}
@@ -1553,7 +747,7 @@ function mostrarListaDocentes(docentes) {
                         </div>
                     ` : `
                         <div class="rating-mini">
-                            <span style="color: #999; font-size: 0.85rem;">Sin calificaciones</span>
+                            <span style="color: var(--text-muted); font-size: 0.85rem;">Sin calificaciones</span>
                         </div>
                     `}
                 </div>
@@ -1564,127 +758,35 @@ function mostrarListaDocentes(docentes) {
     container.innerHTML = html;
 }
 
-// ================= BÚSQUEDA =================
-function filtrar() {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(() => {
-        const query = normalizar(document.getElementById('buscar').value);
-        
-        if (!query) {
-            if (vista === 'asignatura') {
-                cargarListaAsignaturas();
-            } else {
-                cargarListaDocentes();
-            }
-            return;
-        }
-        
-        // Filtrar según la vista actual
-        if (vista === 'asignatura') {
-            const asignaturasFiltradas = ASIGNATURAS_BASE
-                .filter(asignatura => normalizar(asignatura).includes(query))
-                .map(nombre => {
-                    const registros = datos.filter(fila => 
-                        fila.Asignatura && normalizar(fila.Asignatura) === normalizar(nombre)
-                    );
-                    
-                    const calificaciones = registros
-                        .map(fila => parseFloat(fila["Valoración materia"]))
-                        .filter(calif => !isNaN(calif) && calif > 0);
-                    
-                    // Calcular info extendida para la búsqueda - CORREGIDO
-                    const todosEnfoques = registros
-                        .map(fila => fila.Enfoque)
-                        .filter(enfoque => enfoque && enfoque.trim());
-                    
-                    const todasCargas = registros
-                        .map(fila => fila["Carga Académica"])  // ← CORREGIDO
-                        .filter(carga => carga && carga.trim());
-                    
-                    const todosGastos = registros
-                        .map(fila => fila["Gasto Económico"])  // ← CORREGIDO
-                        .filter(gasto => gasto && gasto.trim());
-                    
-                    return {
-                        nombre: nombre,
-                        promedio: calcularPromedio(calificaciones),
-                        numOpiniones: calificaciones.length,
-                        tieneOpiniones: calificaciones.length > 0,
-                        infoExtendida: {
-                            enfoque: calcularModa(todosEnfoques),
-                            carga: calcularModa(todasCargas),
-                            gasto: calcularModa(todosGastos)
-                        }
-                    };
-                });
-            
-            mostrarListaAsignaturas(asignaturasFiltradas);
-        } else {
-            const docentesFiltrados = DOCENTES_BASE
-                .filter(docente => normalizar(docente).includes(query))
-                .map(nombre => {
-                    const registros = datos.filter(fila => 
-                        fila.Docente && normalizar(fila.Docente) === normalizar(nombre)
-                    );
-                    
-                    const calificaciones = registros
-                        .map(fila => parseFloat(fila["Valoración Docente"]))
-                        .filter(calif => !isNaN(calif) && calif > 0);
-                    
-                    // Materias asociadas
-                    const materiasAsociadas = [...new Set(registros
-                        .map(fila => fila.Asignatura)
-                        .filter(asignatura => asignatura && !esTaller(asignatura))
-                    )];
-                    
-                    return {
-                        nombre: nombre,
-                        promedio: calcularPromedio(calificaciones),
-                        numOpiniones: calificaciones.length,
-                        tieneOpiniones: calificaciones.length > 0,
-                        materiasAsociadas: materiasAsociadas
-                    };
-                });
-            
-            mostrarListaDocentes(docentesFiltrados);
-        }
-    }, 300);
-}
-
 // ================= PERFILES =================
 function verPerfilAsignatura(nombreAsignatura) {
     vista = "asignatura";
     mostrarSeccion('perfil');
     
-    // Buscar todos los registros de esta asignatura
     const registros = datos.filter(fila => 
         fila.Asignatura && normalizar(fila.Asignatura) === normalizar(nombreAsignatura)
     );
     
-    // Calificaciones
     const calificaciones = registros
         .map(fila => parseFloat(fila["Valoración materia"]))
         .filter(calif => !isNaN(calif) && calif > 0);
     
-    // Recopilar TODOS los valores para calcular modas - CORREGIDO
     const todosEnfoques = registros
         .map(fila => fila.Enfoque)
         .filter(enfoque => enfoque && enfoque.trim());
     
-    // ✅ CORRECCIÓN CRÍTICA AQUÍ: Nombres CORRECTOS de columnas
     const todasCargas = registros
-        .map(fila => fila["Carga Académica"])  // ← NOMBRE CORRECTO
+        .map(fila => fila["Carga Académica"])
         .filter(carga => carga && carga.trim());
     
     const todosGastos = registros
-        .map(fila => fila["Gasto Económico"])  // ← NOMBRE CORRECTO
+        .map(fila => fila["Gasto Económico"])
         .filter(gasto => gasto && gasto.trim());
     
     const todosTiposEvaluacion = registros
         .map(fila => fila.Calificación)
         .filter(tipo => tipo && tipo.trim());
     
-    // Calcular modas
     const infoExtendida = {
         enfoque: calcularModa(todosEnfoques),
         carga: calcularModa(todasCargas),
@@ -1693,35 +795,31 @@ function verPerfilAsignatura(nombreAsignatura) {
         totalOpiniones: registros.length
     };
     
-    // Comentarios
     const comentarios = registros
         .filter(fila => fila["Opinión materia"] && fila["Opinión materia"].trim())
         .map(fila => ({
             texto: fila["Opinión materia"],
-            fecha: fila.Timestamp || '',
-            tipo: 'asignatura'
+            fecha: fila.Timestamp || ''
         }));
     
     const promedio = calcularPromedio(calificaciones);
     const numOpiniones = calificaciones.length;
     
-    // Función para determinar la clase CSS según carga/gasto
     const getIndicatorClass = (valor) => {
-        if (!valor || valor === "No especificado") return "indicator-no-especificado";
-        
-        if (["Baja", "Media", "Alta"].includes(valor)) {
-            return `indicator-carga-${valor.toLowerCase()}`;
-        }
-        
-        if (["Casi ninguno", "Bajo", "Medio", "Alto", "Muy alto"].includes(valor)) {
-            const nombreClase = valor.toLowerCase().replace(" ", "-").replace("casi-ninguno", "gasto-ninguno");
-            return `indicator-gasto-${nombreClase}`;
-        }
-        
-        return "";
+        if (!valor || valor === "No especificado") return "";
+        const clases = {
+            "Baja": "indicator-baja",
+            "Media": "indicator-media",
+            "Alta": "indicator-alta",
+            "Casi ninguno": "indicator-gasto-ninguno",
+            "Bajo": "indicator-bajo",
+            "Medio": "indicator-medio",
+            "Alto": "indicator-alto",
+            "Muy alto": "indicator-muy-alto"
+        };
+        return clases[valor] || "";
     };
     
-    // Generar HTML del perfil
     let html = `
         <div class="perfil">
             <div class="perfil-header">
@@ -1744,7 +842,7 @@ function verPerfilAsignatura(nombreAsignatura) {
             </div>
             
             <div class="info-materia">
-                <h3 style="margin-bottom: 16px; color: var(--primary-color); font-size: 1.1rem;">📋 Información según opiniones de estudiantes</h3>
+                <h3 style="margin-bottom: 16px; color: var(--primary-color); font-size: 1.1rem;">📋 Información según opiniones</h3>
                 <div class="info-grid">
                     <div class="info-item">
                         <h4>Enfoque</h4>
@@ -1774,7 +872,6 @@ function verPerfilAsignatura(nombreAsignatura) {
             </div>
     `;
     
-    // Sección de comentarios
     if (comentarios.length > 0) {
         html += `
             <div class="comentarios-section">
@@ -1787,7 +884,7 @@ function verPerfilAsignatura(nombreAsignatura) {
                 <div class="comentarios-container" id="comentariosContainer">
         `;
         
-        comentarios.forEach((comentario, index) => {
+        comentarios.forEach(comentario => {
             html += `
                 <div class="comentario">
                     <div class="comentario-texto">
@@ -1822,7 +919,6 @@ function verPerfilAsignatura(nombreAsignatura) {
     }
     
     html += `</div>`;
-    
     document.getElementById('contenidoPerfil').innerHTML = html;
 }
 
@@ -1830,36 +926,30 @@ function verPerfilDocente(nombreDocente) {
     vista = "docente";
     mostrarSeccion('perfil');
     
-    // Buscar todos los registros de este docente
     const registros = datos.filter(fila => 
         fila.Docente && normalizar(fila.Docente) === normalizar(nombreDocente)
     );
     
-    // Calificaciones (incluyendo talleres)
     const calificaciones = registros
         .map(fila => parseFloat(fila["Valoración Docente"]))
         .filter(calif => !isNaN(calif) && calif > 0);
     
-    // Materias asociadas (excluyendo talleres y duplicados)
     const materiasAsociadas = [...new Set(registros
         .map(fila => fila.Asignatura)
         .filter(asignatura => asignatura && !esTaller(asignatura))
     )];
     
-    // Comentarios (con información de origen)
     const comentarios = registros
         .filter(fila => fila["Opinión Docente"] && fila["Opinión Docente"].trim())
         .map(fila => {
             const esDeTaller = esTaller(fila.Asignatura || '');
             let origen = '';
-            
             if (esDeTaller) {
                 const match = fila.Asignatura.match(/Taller (II|III|IV|V|VI|VII)/i);
                 origen = match ? `Taller ${match[1]}` : 'Taller';
             } else if (fila.Asignatura) {
                 origen = fila.Asignatura;
             }
-            
             return {
                 texto: fila["Opinión Docente"],
                 fecha: fila.Timestamp || '',
@@ -1870,7 +960,6 @@ function verPerfilDocente(nombreDocente) {
     const promedio = calcularPromedio(calificaciones);
     const numOpiniones = calificaciones.length;
     
-    // Generar HTML del perfil
     let html = `
         <div class="perfil">
             <div class="perfil-header">
@@ -1886,32 +975,28 @@ function verPerfilDocente(nombreDocente) {
                             ${generarEstrellas(promedio)}
                         </div>
                         <div class="total-opiniones">
-                            Basado en ${numOpiniones} ${numOpiniones === 1 ? 'evaluación' : 'evaluaciones'} (incluyendo talleres)
+                            Basado en ${numOpiniones} ${numOpiniones === 1 ? 'evaluación' : 'evaluaciones'}
                         </div>
                     </div>
                 </div>
             </div>
     `;
     
-    // Materias asociadas
     if (materiasAsociadas.length > 0) {
         html += `
             <div class="materias-asociadas">
                 <h3 style="margin-bottom: 12px; color: var(--primary-color); font-size: 1.1rem;">📚 Materias asociadas</h3>
                 <div class="materias-list">
         `;
-        
         materiasAsociadas.forEach(materia => {
             html += `<span class="materia-tag">${escapeHTML(materia)}</span>`;
         });
-        
         html += `
                 </div>
             </div>
         `;
     }
     
-    // Sección de comentarios
     if (comentarios.length > 0) {
         html += `
             <div class="comentarios-section">
@@ -1957,11 +1042,19 @@ function verPerfilDocente(nombreDocente) {
     }
     
     html += `</div>`;
-    
     document.getElementById('contenidoPerfil').innerHTML = html;
 }
 
 // ================= FUNCIONES AUXILIARES =================
+function calcularRanking(promedio, numOpiniones) {
+    const minOpiniones = 3;
+    if (numOpiniones < minOpiniones) {
+        return promedio * (numOpiniones / minOpiniones);
+    }
+    const pesoOpiniones = Math.min(numOpiniones / minOpiniones, 2);
+    return promedio * pesoOpiniones;
+}
+
 function toggleComentarios() {
     const container = document.getElementById('comentariosContainer');
     const button = document.querySelector('.btn-toggle-comentarios');
@@ -1989,18 +1082,121 @@ function mostrarError(mensaje) {
     `;
 }
 
+function filtrar() {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+        const query = normalizar(document.getElementById('buscar').value);
+        
+        if (!query) {
+            if (vista === 'asignatura') {
+                cargarListaAsignaturas();
+            } else {
+                cargarListaDocentes();
+            }
+            return;
+        }
+        
+        if (vista === 'asignatura') {
+            const asignaturasFiltradas = ASIGNATURAS_BASE
+                .filter(asignatura => normalizar(asignatura).includes(query))
+                .map(nombre => {
+                    const registros = datos.filter(fila => 
+                        fila.Asignatura && normalizar(fila.Asignatura) === normalizar(nombre)
+                    );
+                    const calificaciones = registros
+                        .map(fila => parseFloat(fila["Valoración materia"]))
+                        .filter(calif => !isNaN(calif) && calif > 0);
+                    
+                    const todosEnfoques = registros
+                        .map(fila => fila.Enfoque)
+                        .filter(enfoque => enfoque && enfoque.trim());
+                    const todasCargas = registros
+                        .map(fila => fila["Carga Académica"])
+                        .filter(carga => carga && carga.trim());
+                    const todosGastos = registros
+                        .map(fila => fila["Gasto Económico"])
+                        .filter(gasto => gasto && gasto.trim());
+                    
+                    return {
+                        nombre: nombre,
+                        promedio: calcularPromedio(calificaciones),
+                        numOpiniones: calificaciones.length,
+                        tieneOpiniones: calificaciones.length > 0,
+                        infoExtendida: {
+                            enfoque: calcularModa(todosEnfoques),
+                            carga: calcularModa(todasCargas),
+                            gasto: calcularModa(todosGastos)
+                        }
+                    };
+                });
+            mostrarListaAsignaturas(asignaturasFiltradas);
+        } else {
+            const docentesFiltrados = DOCENTES_BASE
+                .filter(docente => normalizar(docente).includes(query))
+                .map(nombre => {
+                    const registros = datos.filter(fila => 
+                        fila.Docente && normalizar(fila.Docente) === normalizar(nombre)
+                    );
+                    const calificaciones = registros
+                        .map(fila => parseFloat(fila["Valoración Docente"]))
+                        .filter(calif => !isNaN(calif) && calif > 0);
+                    
+                    const materiasAsociadas = [...new Set(registros
+                        .map(fila => fila.Asignatura)
+                        .filter(asignatura => asignatura && !esTaller(asignatura))
+                    )];
+                    
+                    return {
+                        nombre: nombre,
+                        promedio: calcularPromedio(calificaciones),
+                        numOpiniones: calificaciones.length,
+                        tieneOpiniones: calificaciones.length > 0,
+                        materiasAsociadas: materiasAsociadas
+                    };
+                });
+            mostrarListaDocentes(docentesFiltrados);
+        }
+    }, 300);
+}
+
+// ================= MODO OSCURO =================
+function toggleModo() {
+    const html = document.documentElement;
+    const btn = document.getElementById('btnModo');
+    
+    if (html.getAttribute('data-theme') === 'dark') {
+        html.removeAttribute('data-theme');
+        localStorage.setItem('tema', 'light');
+        if (btn) {
+            btn.innerHTML = '<span class="icono">🌙</span><span>Modo oscuro</span>';
+        }
+    } else {
+        html.setAttribute('data-theme', 'dark');
+        localStorage.setItem('tema', 'dark');
+        if (btn) {
+            btn.innerHTML = '<span class="icono">☀️</span><span>Modo claro</span>';
+        }
+    }
+}
+
 // ================= INICIALIZACIÓN =================
 document.addEventListener('DOMContentLoaded', function() {
+    // Cargar tema guardado
+    const tema = localStorage.getItem('tema');
+    const btn = document.getElementById('btnModo');
+    
+    if (tema === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        if (btn) {
+            btn.innerHTML = '<span class="icono">☀️</span><span>Modo claro</span>';
+        }
+    }
+    
     console.log('🚀 Aplicación de encuestas académicas iniciada');
     cargarDatos();
-    
-    // Configurar búsqueda con debounce
-    const buscador = document.getElementById('buscar');
-    buscador.addEventListener('input', filtrar);
 });
 
 // ================= FUNCIONES GLOBALES =================
-// Hacer funciones disponibles globalmente
 window.verAsignaturas = verAsignaturas;
 window.verDocentes = verDocentes;
 window.volver = volver;
@@ -2010,6 +1206,7 @@ window.cambiarFiltro = cambiarFiltro;
 window.toggleComentarios = toggleComentarios;
 window.verPerfilAsignatura = verPerfilAsignatura;
 window.verPerfilDocente = verPerfilDocente;
+window.toggleModo = toggleModo;
 </script>
 
 </body>
